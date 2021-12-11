@@ -62,6 +62,7 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
 .boxes {
     --size: 32px;
     --duration: 800ms;
@@ -268,14 +269,14 @@ html {
     background: #F9FBFF;
 }
 
-    body .dribbble {
-        position: fixed;
-        display: block;
-        right: 20px;
-        bottom: 20px;
-    }
+body .dribbble {
+    position: fixed;
+    display: block;
+    right: 20px;
+    bottom: 20px;
+}
 
-        body .dribbble img {
-            display: block;
-            height: 28px;
-        }
+    body .dribbble img {
+        display: block;
+        height: 28px;
+    }
