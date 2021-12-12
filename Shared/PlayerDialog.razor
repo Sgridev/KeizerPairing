@@ -1,0 +1,25 @@
+﻿@inject ISnackbar Snackbar
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value='@player.Name' Label="Name" />
+        <MudTextField @bind-Value='@player.Rating' Label="Rating" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Player player { get; set; }
+    void Submit()
+    {
+        if (player.Name == null || player.Name == string.Empty)
+            player.Name = $"Player{player.Number}";
+        MudDialog.Close(DialogResult.Ok(player));
+        Snackbar.Add("Player Added", Severity.Success);
+    }
+    void Cancel() => MudDialog.Cancel();
+}
