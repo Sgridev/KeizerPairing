@@ -27,7 +27,7 @@ namespace MudBlazor.Docs.Shared
         {
             _currentTheme = _defaultTheme;
             //if not home page, the navbar starts open
-            if (NavigationManager.Uri == NavigationManager.BaseUri)
+            if (NavigationManager.Uri != NavigationManager.BaseUri)
             {
                 _drawerOpen = true;
             }
