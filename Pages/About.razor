@@ -1,0 +1,55 @@
+﻿@page "/about"
+
+<MudMainContent Class="mudblazor-main-content">
+    <MudContainer Class="mudblazor-index">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4">What is the Keizer System?</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudText Align="Align.Center" Class="mudblazor-description-text">
+                        The Keizer system is a non-eliminating tournament format that features a flexible number of rounds of competition.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudText Align="Align.Center" Class="mudblazor-description-text">
+                        The three core ideas behind the Keizer system are:
+                    </MudText>
+                </MudItem>
+                    <MudGrid Spacing="4" Class="pt-7 pb-7">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudPaper Elevation="25" Class="px-4 py-6 rounded-lg mudblazor-goal-paper material">
+                                <MudText Class="mudblazor-goal-title mb-3" Color="Color.Primary" Align="Align.Center">Everyone Plays</MudText>
+                                <MudText Align="Align.Center">Everyone will be able to play in each round, except if the number of available players is odd</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudPaper Elevation="25" Class="px-4 py-6 rounded-lg mudblazor-goal-paper in-c">
+                                <MudText Class="mudblazor-goal-title  mb-3" Color="Color.Secondary" Align="Align.Center">Score Matters</MudText>
+                                <MudText Align="Align.Center">A win against a strong opponent scores more than a win against a weak opponent</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudPaper Elevation="25" Class="px-4 py-6 rounded-lg mudblazor-goal-paper be-included">
+                                <MudText Class="mudblazor-goal-title  mb-3" Color="Color.Tertiary" Align="Align.Center">Balanced Games</MudText>
+                                <MudText Align="Align.Center">Every game is supposed to be between two almost equally strong players</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudText Align="Align.Center" Class="mudblazor-description-text">
+                        The flexibility of the Keizer system permits players to join the tournament after the first round.
+                    </MudText>
+                    <MudText Align="Align.Center" Class="mudblazor-description-text">
+                        If you want to know more about the Keizer system and its story, please read 
+                        <MudLink Href="https://jbfsoftware.com/wordpress/sevilla-keizer/" Target="_blank">this Sevilla article</MudLink> about it.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <div class="d-flex justify-center">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Link="/" Class="docs-mud-button get-started mt-4">Home</MudButton>
+                    </div>
+                </MudItem>
+            </MudGrid>
+    </MudContainer>
+</MudMainContent>
