@@ -1,34 +1,68 @@
-﻿@inherits LayoutComponentBase
+@namespace MudBlazor.Docs.Shared
+@inherits LayoutComponentBase
 
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<PageTitle>MudBlazor - Blazor Component Library</PageTitle>
 
-<MudLayout>
-    <MudAppBar Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">KeizerPairing</MudText>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+<MudRTLProvider RightToLeft="@_rightToLeft">
+    <MudThemeProvider Theme="_currentTheme"/>
+    <MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
+    <MudSnackbarProvider />
 
-@code {
-    bool _drawerOpen = true;
+    <MudSwipeArea OnSwipe="@OnSwipe">
+        <MudLayout>
+            <MudAppBar Elevation="25">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                <MudText Typo="Typo.h5" Class="mudblazor-appbar-brand-text d-none d-md-flex">MudBlazor</MudText>
+                <MudSpacer />
+                <div class="d-none d-md-flex align-center">
+                    <MudMenu EndIcon="@Icons.Filled.KeyboardArrowDown" Label="Support" Color="Color.Inherit" Dense="true" Direction="Direction.Right" OffsetY="true">
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Community Support</b></MudText>
+                        <MudMenuItem Link="https://discord.gg/mudblazor" Target="_blank">Discord</MudMenuItem>
+                        <MudMenuItem Link="https://github.com/MudBlazor/MudBlazor/discussions" Target="_blank">GitHub Discussions</MudMenuItem>
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Tools and resources</b></MudText>
+                        <MudMenuItem Link="https://try.mudblazor.com/snippet" Target="_blank">TryMudBlazor</MudMenuItem>
+                        <MudMenuItem Link="https://github.com/MudBlazor/Templates" Target="_blank">Templates</MudMenuItem>
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Sponsor</b></MudText>
+                        <MudMenuItem Link="https://opencollective.com/mudblazor" Target="_blank">Open Collective</MudMenuItem>
+                    </MudMenu>
+                    <MudDivider Vertical="true" FlexItem="true" DividerType="DividerType.Middle" Class="mx-4 my-3" />
+                    <MudTooltip Text="Toggle light/dark theme">
+                        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
+                    </MudTooltip>
+                    <MudTooltip Text="GitHub repository">
+                        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+                    </MudTooltip>
+                    <MudTooltip Text="Toggle right-to-left/left-to-right">
+                        <MudIconButton Icon="@Icons.Material.Filled.FormatTextdirectionRToL" Color="Color.Inherit" OnClick="@((e) => RightToLeftToggle())" />
+                    </MudTooltip>
+                </div>
+                <MudMenu Icon="@Icons.Filled.Settings" Color="Color.Inherit" Dense="true" Direction="Direction.Right" OffsetY="true" Class="d-md-none">
+                    <div class="px-2">
+                        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
+                        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+                        <MudIconButton Icon="@Icons.Material.Filled.FormatTextdirectionRToL" Color="Color.Inherit" OnClick="@((e) => RightToLeftToggle())" />
+                    </div>
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Community Support</b></MudText>
+                    <MudMenuItem Link="https://discord.gg/mudblazor" Target="_blank">Discord</MudMenuItem>
+                    <MudMenuItem Link="https://github.com/MudBlazor/MudBlazor/discussions" Target="_blank">GitHub Discussions</MudMenuItem>
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Tools and resources</b></MudText>
+                    <MudMenuItem Link="https://try.mudblazor.com/snippet" Target="_blank">TryMudBlazor</MudMenuItem>
+                    <MudMenuItem Link="https://github.com/MudBlazor/MudBlazor/Templates" Target="_blank">Templates</MudMenuItem>
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Sponsor</b></MudText>
+                    <MudMenuItem Link="https://opencollective.com/mudblazor" Target="_blank">Open Collective</MudMenuItem>
+                </MudMenu>
+            </MudAppBar>
 
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-}
+            <MudDrawer @bind-Open=_drawerOpen Elevation="25" Breakpoint="Breakpoint.Lg" Class="mudblazor-appbar-band">
+                <MudDrawerHeader Class="mudblazor-brand" LinkToIndex="true">
+                    <KeizerLogo />
+                </MudDrawerHeader>
+                <NavMenu @ref="@_navMenuRef" />
+            </MudDrawer>
+                @Body
+            <MudScrollToTop TopOffset="400" Style="z-index:2000;">
+                <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
+            </MudScrollToTop>
+        </MudLayout>
+    </MudSwipeArea>
+</MudRTLProvider>
