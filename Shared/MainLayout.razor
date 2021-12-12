@@ -3,7 +3,7 @@
 
 <PageTitle>MudBlazor - Blazor Component Library</PageTitle>
 
-<MudRTLProvider RightToLeft="@_rightToLeft">
+<MudRTLProvider>
     <MudThemeProvider Theme="_currentTheme"/>
     <MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
     <MudSnackbarProvider />
@@ -18,13 +18,10 @@
                     <MudTooltip Text="Toggle light/dark theme">
                         <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
                     </MudTooltip>
-                    <MudTooltip Text="Toggle right-to-left/left-to-right">
-                        <MudIconButton Icon="@Icons.Material.Filled.FormatTextdirectionRToL" Color="Color.Inherit" OnClick="@((e) => RightToLeftToggle())" />
-                    </MudTooltip>
                 </div>
             </MudAppBar>
 
-            <MudDrawer @bind-Open=_drawerOpen Elevation="25" Breakpoint="Breakpoint.Lg" Class="@_appbarBand">
+            <MudDrawer @bind-Open=_drawerOpen Elevation="25" Breakpoint="Breakpoint.Lg" Class="mudblazor-appbar-band">
                 <MudDrawerHeader Class="mudblazor-brand" LinkToIndex="true">
                     <KeizerLogo />
                 </MudDrawerHeader>

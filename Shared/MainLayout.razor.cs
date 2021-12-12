@@ -6,24 +6,15 @@ namespace MudBlazor.Docs.Shared
     public partial class MainLayout : LayoutComponentBase
     {
         private bool _drawerOpen = false;
-        private bool _rightToLeft = false;
         private NavMenu _navMenuRef;
-        private string _appbarBand = "mudblazor-appbar-band";
 
         [Inject] private NavigationManager NavigationManager { get; set; }
-
-
 
         private void DrawerToggle()
         {
             _drawerOpen = !_drawerOpen;
         }
 
-        private void RightToLeftToggle()
-        {
-            _rightToLeft = !_rightToLeft;
-            _appbarBand = _appbarBand.Contains("right") ? "mudblazor-appbar-band" : "mudblazor-appbar-band-right";
-        }
 
         protected override void OnInitialized()
         {
