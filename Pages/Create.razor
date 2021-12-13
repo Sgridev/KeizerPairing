@@ -1,122 +1,14 @@
 ﻿@page "/create"
-
-@using System.Net.Http.Json
-@inject ISnackbar Snackbar
-@inject IDialogService DialogService
-@inject PlayerService PlayerService
-@implements IDisposable
+@using KeizerPairing.Shared.Components
 
 <MudMainContent Class="mudblazor-main-content">
-    <MudContainer Class="mudblazor-index">
-        <MudItem xs="12" sm="12" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Players</MudText>
-        </MudItem>
-        <MudTable Items="@PlayerService.Players" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" @bind-SelectedItem="selectedItem1" SortLabel="Sort By"
-                  CommitEditTooltip="Commit Edit" OnCommitEditClick="@(() => Snackbar.Add("Player edited correctly"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" RowEditCommit="ItemHasBeenCommitted">
-            <HeaderContent>
-                <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Number)">Nr</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Rating)">Rating</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Presence)">Presence</MudTableSortLabel></MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Nr">@context.Number</MudTd>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Rating">@context.Rating</MudTd>
-                <MudTd DataLabel="Presence">@context.Presence</MudTd>
-            </RowTemplate>
-            <RowEditingTemplate>
-                <MudTd DataLabel="Nr">
-                    @context.Number
-                </MudTd>
-                <MudTd DataLabel="Name">
-                    <MudTextField @bind-Value="@context.Name" Required />
-                </MudTd>
-                <MudTd DataLabel="Rating">
-                    <MudTextField @bind-Value="@context.Rating" Required />
-                </MudTd>
-                <MudTd DataLabel="Presence">
-                    <MudSelect @bind-Value="@context.Presence" T="string" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Present")" />
-                        <MudSelectItem Value="@("Absent")" />
-                    </MudSelect>
-                </MudTd>
-            </RowEditingTemplate>
-            <PagerContent>
-                <MudTablePager />
-            </PagerContent>
-        </MudTable>
-        <MudFab Color="Color.Tertiary" Icon="@Icons.Material.Filled.Add" aria-label="add" Label="Add Player" Class="mt-4" @onclick="OpenDialog" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mud-float-right mt-4">Create Round</MudButton>
+    <MudContainer>
+        <MudGrid>
+            <RoundLabel></RoundLabel>
+            <PlayerTable></PlayerTable>
+            <PairingsTable></PairingsTable>
+            <RankingTable></RankingTable>
+        </MudGrid>
     </MudContainer>
 </MudMainContent>
 
-@code {
-
-    private List<string> editEvents = new();
-    private bool dense = true;
-    private bool hover = true;
-    private bool ronly = false;
-    private bool canCancelEdit = false;
-    private Player selectedItem1 = null;
-    private Player elementBeforeEdit;
-    private HashSet<Player> selectedItems1 = new HashSet<Player>();
-    private HashSet<Player> selectedItems2 = new HashSet<Player>();
-
-    protected override void OnInitialized()
-    {
-        PlayerService.OnChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        PlayerService.OnChange -= StateHasChanged;
-    }
-
-    private void ClearEventLog()
-    {
-        editEvents.Clear();
-    }
-
-    private void AddEditionEvent(string message)
-    {
-        editEvents.Add(message);
-        StateHasChanged();
-    }
-
-    private void BackupItem(object element)
-    {
-        elementBeforeEdit = new()
-            {
-                Name = ((Player)element).Name,
-                Rating = ((Player)element).Rating,
-
-            };
-        AddEditionEvent($"RowEditPreview event: made a backup of Element {((Player)element).Name}");
-    }
-
-    private void ItemHasBeenCommitted(object element)
-    {
-        AddEditionEvent($"RowEditCommit event: Changes to Element {((Player)element).Name} committed");
-    }
-
-    private void ResetItemToOriginalValues(object element)
-    {
-        ((Player)element).Name = elementBeforeEdit.Name;
-        ((Player)element).Rating = elementBeforeEdit.Rating;
-        AddEditionEvent($"RowEditCancel event: Editing of Element {((Player)element).Name} cancelled");
-    }
-
-    private async Task OpenDialog()
-    {
-        var player = new Player() { Number = PlayerService.Players.Count + 1 };
-        var parameters = new DialogParameters { ["player"] = player };
-        var result = await DialogService.Show<PlayerDialog>("Add Player", parameters).Result;
-        if (!result.Cancelled)
-        {
-            PlayerService.Add((Player)result.Data);
-        }
-
-    }
-
-}

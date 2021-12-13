@@ -1,0 +1,53 @@
+﻿@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject PlayerService PlayerService
+@implements IDisposable
+<MudItem md="12">
+    <MudItem xs="12" sm="12" md="12" Class="pt-6">
+        <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Ranking</MudText>
+    </MudItem>
+    <MudTable Items="@PlayerService.CurrentPlayers.OrderByDescending(x => x.Score)" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" SortLabel="Sort By">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Position)">Position</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Wins)">Wins</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Draws)">Draws</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Losses)">Losses</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Score)">Score</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Value)">Value</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Position">@context.Position</MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Wins">@context.Wins</MudTd>
+            <MudTd DataLabel="Draws">@context.Draws</MudTd>
+            <MudTd DataLabel="Losses">@context.Losses</MudTd>
+            <MudTd DataLabel="Score">@context.Score</MudTd>
+            <MudTd DataLabel="Value">@context.Value</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudItem>
+@code {
+
+    private List<string> editEvents = new();
+    private bool dense = true;
+    private bool hover = true;
+    private bool ronly = true;
+    private bool canCancelEdit = false;
+
+
+    protected override void OnInitialized()
+    {
+        PlayerService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PlayerService.OnChange -= StateHasChanged;
+    }
+
+
+}

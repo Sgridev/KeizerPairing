@@ -1,4 +1,5 @@
 ﻿using KeizerPairing.Shared;
+using KeizerPairing.Shared.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace MudBlazor.Docs.Shared
@@ -18,7 +19,10 @@ namespace MudBlazor.Docs.Shared
 
         protected override void OnInitialized()
         {
-            _currentTheme = _defaultTheme;
+            if (localStorage.GetItem<string>("Theme") != "Dark")
+                _currentTheme = _defaultTheme;
+            else
+                _currentTheme = _darkTheme;
             //if not home page, the navbar starts open
             if (NavigationManager.Uri != NavigationManager.BaseUri)
             {
@@ -48,10 +52,14 @@ namespace MudBlazor.Docs.Shared
             if (_currentTheme == _defaultTheme)
             {
                 _currentTheme = _darkTheme;
+                localStorage.SetItem("Theme", "Dark");
+
             }
             else
             {
                 _currentTheme = _defaultTheme;
+                localStorage.SetItem("Theme", "Default");
+
             }
         }
 

@@ -1,0 +1,101 @@
+﻿@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject PlayerService PlayerService
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+@implements IDisposable
+
+<MudItem md="6">
+    <MudItem xs="12" sm="12" md="12">
+        <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Pairings</MudText>
+    </MudItem>
+    <MudTable Items="@PlayerService.CurrentPairings" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" @bind-SelectedItem="selectedItem1" SortLabel="Sort By"
+              CommitEditTooltip="Commit Edit" OnCommitEditClick="@(() => Snackbar.Add("Pairing edited correctly"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" RowEditCommit="ItemHasBeenCommitted">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<Pairing, object>(x=>x.White.Name)">White</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Pairing, object>(x=>x.Black.Name)">Black</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Pairing, object>(x=>x.Result)">Result</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="White">@context.White.Name</MudTd>
+            <MudTd DataLabel="Black">@context.Black.Name</MudTd>
+            <MudTd DataLabel="Result">@context.Result</MudTd>
+        </RowTemplate>
+        <RowEditingTemplate>
+            <MudTd DataLabel="White">
+                <MudTextField @bind-Value="@context.White.Name" Required />
+            </MudTd>
+            <MudTd DataLabel="Black">
+                <MudTextField @bind-Value="@context.Black.Name" Required />
+            </MudTd>
+            <MudTd DataLabel="Result">
+                <MudSelect @bind-Value="@context.Result" T="string" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="@("1 - 0")" />
+                    <MudSelectItem Value="@("1/2 - 1/2")" />
+                    <MudSelectItem Value="@("0 - 1")" />
+                </MudSelect>
+            </MudTd>
+        </RowEditingTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudItem>
+@code {
+
+    private List<string> editEvents = new();
+    private bool dense = true;
+    private bool hover = true;
+    private bool ronly = false;
+    private bool canCancelEdit = false;
+    private Pairing selectedItem1 = null;
+    private Pairing elementBeforeEdit;
+    private HashSet<Pairing> selectedItems1 = new HashSet<Pairing>();
+    private HashSet<Pairing> selectedItems2 = new HashSet<Pairing>();
+
+    protected override void OnInitialized()
+    {
+        PlayerService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PlayerService.OnChange -= StateHasChanged;
+    }
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+            {
+                Result = ((Pairing)element).Result,
+
+            };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((Pairing)element).Result}");
+    }
+
+    private void ItemHasBeenCommitted(object element)
+    {
+        PlayerService.UpdateRankings();
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((Pairing)element).Result} committed");
+        localStorage.SetItem("Tournament", PlayerService);
+
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((Pairing)element).Result = elementBeforeEdit.Result;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((Pairing)element).Result} cancelled");
+    }
+
+
+}

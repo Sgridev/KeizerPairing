@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MudBlazor.Services;
 using KeizerPairing.Shared;
+using Blazored.LocalStorage;
 
 namespace KeizerPairing
 {
@@ -23,6 +24,7 @@ namespace KeizerPairing
 
             builder.Services.AddMudServices();
             builder.Services.AddSingleton<PlayerService>();
+            builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync();
         }
