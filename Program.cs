@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using MudBlazor.Services;
+using KeizerPairing.Shared;
 
 namespace KeizerPairing
 {
@@ -21,6 +22,7 @@ namespace KeizerPairing
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddMudServices();
+            builder.Services.AddSingleton<PlayerService>();
 
             await builder.Build().RunAsync();
         }

@@ -3,13 +3,15 @@
 @using System.Net.Http.Json
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject PlayerService PlayerService
+@implements IDisposable
 
 <MudMainContent Class="mudblazor-main-content">
     <MudContainer Class="mudblazor-index">
         <MudItem xs="12" sm="12" md="12">
             <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Players</MudText>
         </MudItem>
-        <MudTable Items="@players" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" @bind-SelectedItem="selectedItem1" SortLabel="Sort By"
+        <MudTable Items="@PlayerService.Players" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" @bind-SelectedItem="selectedItem1" SortLabel="Sort By"
                   CommitEditTooltip="Commit Edit" OnCommitEditClick="@(() => Snackbar.Add("Player edited correctly"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues" RowEditCommit="ItemHasBeenCommitted">
             <HeaderContent>
                 <MudTh><MudTableSortLabel SortBy="new Func<Player, object>(x=>x.Number)">Nr</MudTableSortLabel></MudTh>
@@ -35,8 +37,8 @@
                 </MudTd>
                 <MudTd DataLabel="Presence">
                     <MudSelect @bind-Value="@context.Presence" T="string" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Present")" /> 
-                        <MudSelectItem Value="@("Absent")"/> 
+                        <MudSelectItem Value="@("Present")" />
+                        <MudSelectItem Value="@("Absent")" />
                     </MudSelect>
                 </MudTd>
             </RowEditingTemplate>
@@ -61,8 +63,15 @@
     private HashSet<Player> selectedItems1 = new HashSet<Player>();
     private HashSet<Player> selectedItems2 = new HashSet<Player>();
 
-    private List<Player> players = new List<Player>();
+    protected override void OnInitialized()
+    {
+        PlayerService.OnChange += StateHasChanged;
+    }
 
+    public void Dispose()
+    {
+        PlayerService.OnChange -= StateHasChanged;
+    }
 
     private void ClearEventLog()
     {
@@ -100,12 +109,12 @@
 
     private async Task OpenDialog()
     {
-        var player = new Player() { Number = players.Count + 1 };
+        var player = new Player() { Number = PlayerService.Players.Count + 1 };
         var parameters = new DialogParameters { ["player"] = player };
         var result = await DialogService.Show<PlayerDialog>("Add Player", parameters).Result;
         if (!result.Cancelled)
         {
-            players.Add((Player)result.Data);
+            PlayerService.Add((Player)result.Data);
         }
 
     }
