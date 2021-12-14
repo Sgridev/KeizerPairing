@@ -88,7 +88,7 @@
 
     private void ItemHasBeenCommitted(object element)
     {
-        PlayerService.Update();
+        PlayerService.UpdatingPlayer();
         localStorage.SetItem("Tournament", PlayerService);
 
         AddEditionEvent($"RowEditCommit event: Changes to Element {((Player)element).Name} committed");
@@ -108,7 +108,7 @@
         var result = await DialogService.Show<PlayerDialog>("Add Player", parameters).Result;
         if (!result.Cancelled)
         {
-            PlayerService.Add((Player)result.Data);
+            PlayerService.AddingPlayer((Player)result.Data);
             localStorage.SetItem("Tournament", PlayerService);
         }
 

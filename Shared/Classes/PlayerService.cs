@@ -18,19 +18,19 @@ namespace KeizerPairing.Shared
 
         public bool NextRoundDisabled { get; set; }
 
-        public void Add(Player player)
+        public void AddingPlayer(Player player)
         {
             CurrentPlayers.Add(player);
             UpdatePairings();
             UpdateRankings();
         }
 
-
-        public void Update()
+        public void UpdatingPlayer()
         {
             UpdatePairings();
             UpdateRankings();
         }
+
         private void UpdatePairings()
         {
             CurrentPairings.Clear();
@@ -48,8 +48,7 @@ namespace KeizerPairing.Shared
                 }
             }
         }
-        //gli score si valutano con i value del round prima
-        //nel primo round si calcola con l'elo
+
         public void UpdateRankings()
         {
 
@@ -197,6 +196,83 @@ namespace KeizerPairing.Shared
 
         }
 
+        public void NextRound()
+        {
+            Round round = new Round();
+            round.RoundNumber = CurrentRoundNumber++;
+            round.Pairings = CurrentPairings.Clone();
+            Rounds.Add(round);
+            UpdatePlayerValuesForNextRound();
+            round.Players = CurrentPlayers.Clone();
+            NextRoundDisabled = true;
+            OnChange?.Invoke();
+            UpdatePairings();
+        }
+
+        private void UpdatePlayerValuesForNextRound()
+        {
+            List<Player> playerRoundStats = CurrentPlayers.Clone();
+
+            int counter = 30;
+            foreach (var player in CurrentPlayers.OrderByDescending(x => x.Score))
+            {
+                player.Value = counter + CurrentPlayers.Count;
+                player.Score = player.Value;
+                player.Wins = 0;
+                player.Losses = 0;
+                player.Draws = 0;
+                counter--;
+            }
+
+            foreach (var round in Rounds)
+            {
+                foreach(Pairing pairing in round.Pairings)
+                {
+                    Player whitePlayer = CurrentPlayers.Where(x=> x.Number == pairing.White.Number).FirstOrDefault();
+                    Player blackPlayer = CurrentPlayers.Where(x=> x.Number == pairing.Black.Number).FirstOrDefault();
+                    int whitePlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.White.Number).FirstOrDefault().Value;
+                    int blackPlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.Black.Number).FirstOrDefault().Value;
+                    switch (pairing.Result)
+                    {
+                        case "1 - 0":
+                            whitePlayer.Score += blackPlayerRoundValue;
+                            whitePlayer.Wins++;
+                            blackPlayer.Losses++;
+                            break;
+                        case "0 - 1":
+                            blackPlayer.Score += whitePlayerRoundValue;
+                            blackPlayer.Wins++;
+                            whitePlayer.Losses++;
+                            break;
+                        case "1/2 - 1/2":
+                            whitePlayer.Score += blackPlayerRoundValue / 2;
+                            blackPlayer.Score += whitePlayerRoundValue / 2;
+                            break;
+                    }
+
+                }
+            }
+
+            counter = 30;
+            int position = 1;
+            foreach (var player in CurrentPlayers.OrderByDescending(x => x.Score))
+            {
+                player.Value = counter + CurrentPlayers.Count;
+                counter--;
+                player.Position = position++;
+            }
+        }
+
+        public void ClearTournament()
+        {
+            Rounds = new List<Round>();
+            CurrentPlayers = new List<Player>();
+            CurrentPairings = new List<Pairing>();
+            CurrentRoundNumber = 1;
+            NextRoundDisabled = true;
+            OnChange?.Invoke();
+        }
+
         public void LoadDataFromStorage(PlayerService playerService)
         {
             if (playerService != null)
@@ -208,28 +284,8 @@ namespace KeizerPairing.Shared
                 NextRoundDisabled = playerService.NextRoundDisabled;
             }
         }
-
-        public void NextRound()
-        {
-
-            Round round = new Round();
-            round.RoundNumber = CurrentRoundNumber++;
-            round.Pairings = CurrentPairings.Clone();
-            round.Players = CurrentPlayers.Clone();
-            Rounds.Add(round);
-            NextRoundDisabled = true;
-            OnChange?.Invoke();
-            UpdatePairings();
-        }
-
-
     }
-    public static class CloneExtensions
-    {
-        public static T Clone<T>(this T cloneable) where T : new()
-        {
-            var toJson = JsonSerializer.Serialize(cloneable);
-            return JsonSerializer.Deserialize<T>(toJson);
-        }
-    }
+  
+
+   
 }

@@ -16,7 +16,9 @@ namespace KeizerPairing.Shared
         public int Score { get; set; }
         public int Value { get; set; }
 
+        public int StartingValue { get; set; }
 
+        public int ScorePerRound { get; set; }
     }
 }
 

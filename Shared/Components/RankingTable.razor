@@ -1,6 +1,8 @@
 ﻿@inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject PlayerService PlayerService
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
 @implements IDisposable
 <MudItem md="12">
     <MudItem xs="12" sm="12" md="12" Class="pt-6">
@@ -29,6 +31,7 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
+    <MudFab Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" aria-label="add" Class="mt-4" @onclick="ClearTournament" />
 </MudItem>
 @code {
 
@@ -49,5 +52,18 @@
         PlayerService.OnChange -= StateHasChanged;
     }
 
+    private async Task ClearTournament()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Are you sure you want to start a new tournament?");
+        parameters.Add("ButtonText", "GO");
+        parameters.Add("Color", Color.Error);
 
+        var result = await DialogService.Show<DialogComponent>("Next Round", parameters).Result;
+        if (!result.Cancelled)
+        {
+            PlayerService.ClearTournament();
+            localStorage.SetItem("Tournament", PlayerService);
+        }
+    }
 }
