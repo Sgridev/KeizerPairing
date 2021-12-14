@@ -233,9 +233,16 @@ namespace KeizerPairing.Shared
             Rounds.Add(round);
             UpdatePlayerValuesForNextRound();
             round.Players = CurrentPlayers.Clone();
+            UpdatePlayerPresence();
             NextRoundDisabled = true;
             OnChange?.Invoke();
             UpdatePairings();
+        }
+
+        private void UpdatePlayerPresence()
+        {
+            foreach (var player in CurrentPlayers)
+                player.Presence = "Present";
         }
 
         private void UpdatePlayerValuesForNextRound()
