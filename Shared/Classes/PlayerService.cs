@@ -20,7 +20,7 @@ namespace KeizerPairing.Shared
 
         public void AddingPlayer(Player player)
         {
-            if(CurrentRoundNumber > 1)
+            if (CurrentRoundNumber > 1)
             {
                 player.Value = CurrentPlayers.Min(x => x.Value - 1);
                 player.Score = player.Value;
@@ -47,11 +47,16 @@ namespace KeizerPairing.Shared
             {
                 playersByRating = CurrentPlayers.Where(x => x.Presence == "Present").OrderByDescending(x => x.Rating).ToArray();
             }
-            for (int i = 0; i < playersByRating.Count() - 1; i += 2)
+            for (int i = 0; i < playersByRating.Length; i += 2)
             {
-                if (playersByRating[i + 1] != null)
+                if (i + 1 < playersByRating.Length)
                 {
-                    Pairing pairing = new Pairing() { White = playersByRating[i], Black = playersByRating[i + 1] };
+                    Pairing pairing = new() { White = playersByRating[i], Black = playersByRating[i + 1] };
+                    CurrentPairings.Add(pairing);
+                }
+                else
+                {
+                    Pairing pairing = new() { White = playersByRating[i], Black = new Player { Name = "Bye" }, Result = "1 - 0" };
                     CurrentPairings.Add(pairing);
                 }
             }
@@ -80,19 +85,23 @@ namespace KeizerPairing.Shared
 
                     foreach (var player in CurrentPlayers)
                     {
-                        var opponentPlayer = CurrentPairings.Where(x => (x.White.Number == player.Number || x.Black.Number == player.Number) && x.Result != null && x.Result != string.Empty).FirstOrDefault();
-                        if (opponentPlayer != null)
+                        var currentPairing = CurrentPairings.Where(x => (x.White.Number == player.Number || x.Black.Number == player.Number) && x.Result != null && x.Result != string.Empty).FirstOrDefault();
+                        if (currentPairing != null)
                         {
-                            if (opponentPlayer.White.Number == player.Number)
+                            if (currentPairing.White.Number == player.Number)
                             {
-                                if (opponentPlayer.Result == "1/2 - 1/2")
+                                if (currentPairing.Result == "1/2 - 1/2")
                                 {
-                                    player.Score = player.Value + (opponentPlayer.Black.Value / 2);
+                                    player.Score = player.Value + (currentPairing.Black.Value / 2);
                                     player.Draws += 1;
                                 }
-                                else if (opponentPlayer.Result == "1 - 0")
+                                else if (currentPairing.Result == "1 - 0")
                                 {
-                                    player.Score = player.Value + opponentPlayer.Black.Value;
+                                    if (currentPairing.Black.Name == "Bye")
+                                        player.Score = player.Value + player.Value;
+                                    else
+                                        player.Score = player.Value + currentPairing.Black.Value;
+
                                     player.Wins += 1;
 
                                 }
@@ -101,15 +110,15 @@ namespace KeizerPairing.Shared
                             }
                             else
                             {
-                                if (opponentPlayer.Result == "1/2 - 1/2")
+                                if (currentPairing.Result == "1/2 - 1/2")
                                 {
-                                    player.Score = player.Value + (opponentPlayer.White.Value / 2);
+                                    player.Score = player.Value + (currentPairing.White.Value / 2);
                                     player.Draws += 1;
 
                                 }
-                                else if (opponentPlayer.Result == "0 - 1")
+                                else if (currentPairing.Result == "0 - 1")
                                 {
-                                    player.Score = player.Value + opponentPlayer.White.Value;
+                                    player.Score = player.Value + currentPairing.White.Value;
                                     player.Wins += 1;
                                 }
                                 else
@@ -118,6 +127,8 @@ namespace KeizerPairing.Shared
                             }
 
                         }
+
+
                     }
                 }
 
@@ -142,29 +153,39 @@ namespace KeizerPairing.Shared
 
                             if (currentPairing.White.Number == player.Number)
                             {
-                                int opponentLastRoundValue = Rounds[CurrentRoundNumber - 2].Players.Where(x => x.Number == currentPairing.Black.Number).FirstOrDefault().Value;
-                                if (currentPairing.Result == "1/2 - 1/2")
+                                if (Rounds[CurrentRoundNumber - 2].Players.Any(x => x.Number == currentPairing.Black.Number))
                                 {
-                                    player.Score = lastRoundplayer.Score + (opponentLastRoundValue / 2);
-                                    player.Draws = lastRoundplayer.Draws + 1;
-                                    player.Wins = lastRoundplayer.Wins;
-                                    player.Losses = lastRoundplayer.Losses;
+                                    int opponentLastRoundValue = Rounds[CurrentRoundNumber - 2].Players.Where(x => x.Number == currentPairing.Black.Number).FirstOrDefault().Value;
+                                    if (currentPairing.Result == "1/2 - 1/2")
+                                    {
+                                        player.Score = lastRoundplayer.Score + (opponentLastRoundValue / 2);
+                                        player.Draws = lastRoundplayer.Draws + 1;
+                                        player.Wins = lastRoundplayer.Wins;
+                                        player.Losses = lastRoundplayer.Losses;
 
-                                }
-                                else if (currentPairing.Result == "1 - 0")
-                                {
-                                    player.Score = lastRoundplayer.Score + opponentLastRoundValue;
-                                    player.Wins = lastRoundplayer.Wins + 1;
-                                    player.Losses = lastRoundplayer.Losses;
-                                    player.Draws = lastRoundplayer.Draws;
+                                    }
+                                    else if (currentPairing.Result == "1 - 0")
+                                    {
+                                        player.Score = lastRoundplayer.Score + opponentLastRoundValue;
+                                        player.Wins = lastRoundplayer.Wins + 1;
+                                        player.Losses = lastRoundplayer.Losses;
+                                        player.Draws = lastRoundplayer.Draws;
 
+                                    }
+                                    else
+                                    {
+                                        player.Losses = lastRoundplayer.Losses + 1;
+                                        player.Wins = lastRoundplayer.Wins;
+                                        player.Draws = lastRoundplayer.Draws;
+
+                                    }
                                 }
                                 else
                                 {
-                                    player.Losses = lastRoundplayer.Losses + 1;
-                                    player.Wins = lastRoundplayer.Wins;
+                                    player.Score = lastRoundplayer.Score + lastRoundplayer.Value;
+                                    player.Wins = lastRoundplayer.Wins + 1;
+                                    player.Losses = lastRoundplayer.Losses;
                                     player.Draws = lastRoundplayer.Draws;
-
                                 }
                             }
                             else
@@ -234,30 +255,38 @@ namespace KeizerPairing.Shared
 
             foreach (var round in Rounds)
             {
-                foreach(Pairing pairing in round.Pairings)
+                foreach (Pairing pairing in round.Pairings)
                 {
-                    Player whitePlayer = CurrentPlayers.Where(x=> x.Number == pairing.White.Number).FirstOrDefault();
-                    Player blackPlayer = CurrentPlayers.Where(x=> x.Number == pairing.Black.Number).FirstOrDefault();
-                    int whitePlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.White.Number).FirstOrDefault().Value;
-                    int blackPlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.Black.Number).FirstOrDefault().Value;
-                    switch (pairing.Result)
+                    Player whitePlayer = CurrentPlayers.Where(x => x.Number == pairing.White.Number).FirstOrDefault();
+                    Player blackPlayer = CurrentPlayers.Where(x => x.Number == pairing.Black.Number).FirstOrDefault();
+                    if (blackPlayer != null)
                     {
-                        case "1 - 0":
-                            whitePlayer.Score += blackPlayerRoundValue;
-                            whitePlayer.Wins++;
-                            blackPlayer.Losses++;
-                            break;
-                        case "0 - 1":
-                            blackPlayer.Score += whitePlayerRoundValue;
-                            blackPlayer.Wins++;
-                            whitePlayer.Losses++;
-                            break;
-                        case "1/2 - 1/2":
-                            whitePlayer.Score += blackPlayerRoundValue / 2;
-                            blackPlayer.Score += whitePlayerRoundValue / 2;
-                            break;
+                        int whitePlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.White.Number).FirstOrDefault().Value;
+                        int blackPlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.Black.Number).FirstOrDefault().Value;
+                        switch (pairing.Result)
+                        {
+                            case "1 - 0":
+                                whitePlayer.Score += blackPlayerRoundValue;
+                                whitePlayer.Wins++;
+                                blackPlayer.Losses++;
+                                break;
+                            case "0 - 1":
+                                blackPlayer.Score += whitePlayerRoundValue;
+                                blackPlayer.Wins++;
+                                whitePlayer.Losses++;
+                                break;
+                            case "1/2 - 1/2":
+                                whitePlayer.Score += blackPlayerRoundValue / 2;
+                                blackPlayer.Score += whitePlayerRoundValue / 2;
+                                break;
+                        }
                     }
-
+                    else
+                    {
+                        int whitePlayerRoundValue = playerRoundStats.Where(x => x.Number == pairing.White.Number).FirstOrDefault().Value;
+                        whitePlayer.Score += whitePlayerRoundValue;
+                        whitePlayer.Wins++;
+                    }
                 }
             }
 
@@ -293,7 +322,7 @@ namespace KeizerPairing.Shared
             }
         }
     }
-  
 
-   
+
+
 }
