@@ -39,6 +39,7 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowForward" aria-label="add" Label="Next Round" Class="mt-4 mud-float-right" Disabled="PlayerService.NextRoundDisabled" @onclick="NextRound" />
 </MudItem>
 @code {
 
@@ -97,5 +98,19 @@
         AddEditionEvent($"RowEditCancel event: Editing of Element {((Pairing)element).Result} cancelled");
     }
 
+    private async Task NextRound()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Are you sure you want to go to the next round?");
+        parameters.Add("ButtonText", "GO");
+        parameters.Add("Color", Color.Primary);
+
+        var result = await DialogService.Show<DialogComponent>("Next Round", parameters).Result;
+        if (!result.Cancelled)
+        {
+            PlayerService.NextRound();
+            localStorage.SetItem("Tournament", PlayerService);
+        }
+    }
 
 }
