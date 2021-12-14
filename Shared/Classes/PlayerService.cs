@@ -20,6 +20,14 @@ namespace KeizerPairing.Shared
 
         public void AddingPlayer(Player player)
         {
+            if(CurrentRoundNumber > 1)
+            {
+                player.Value = CurrentPlayers.Min(x => x.Value - 1);
+                player.Score = player.Value;
+                player.Position = CurrentPlayers.Count + 1;
+                Rounds[CurrentRoundNumber - 2].Players.Add(player.Clone());
+            }
+
             CurrentPlayers.Add(player);
             UpdatePairings();
             UpdateRankings();
