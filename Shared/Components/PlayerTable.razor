@@ -55,7 +55,7 @@
     protected override void OnInitialized()
     {
 
-        PlayerService.LoadDataFromStorage(localStorage.GetItem<PlayerService>("Tournament"));
+        PlayerService.Load(localStorage.GetItem<PlayerService>("Tournament"));
         PlayerService.OnChange += StateHasChanged;
     }
 
@@ -88,7 +88,7 @@
 
     private void ItemHasBeenCommitted(object element)
     {
-        PlayerService.UpdatingPlayer();
+        PlayerService.UpdatePlayer();
         localStorage.SetItem("Tournament", PlayerService);
 
         AddEditionEvent($"RowEditCommit event: Changes to Element {((Player)element).Name} committed");
@@ -108,7 +108,7 @@
         var result = await DialogService.Show<PlayerDialog>("Add Player", parameters).Result;
         if (!result.Cancelled)
         {
-            PlayerService.AddingPlayer((Player)result.Data);
+            PlayerService.AddPlayer((Player)result.Data);
             localStorage.SetItem("Tournament", PlayerService);
         }
 

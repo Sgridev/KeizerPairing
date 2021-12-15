@@ -62,7 +62,7 @@
         var result = await DialogService.Show<DialogComponent>("Next Round", parameters).Result;
         if (!result.Cancelled)
         {
-            PlayerService.ClearTournament();
+            PlayerService.Clear();
             localStorage.SetItem("Tournament", PlayerService);
         }
     }
