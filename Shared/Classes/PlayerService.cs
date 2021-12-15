@@ -16,7 +16,48 @@ namespace KeizerPairing.Shared
 
         public int CurrentRoundNumber { get; set; } = 1;
 
-        public bool NextRoundDisabled { get; set; }
+        public bool NextRoundDisabled { get; set; } = true;
+        public bool EndTournamentDisabled { get; set; } = true;
+
+        public string PairingsVisibility { get; set; } = "";
+
+        public string RoundVisibility { get; set; } = "";
+        public string DeleteVisibility { get; set; } = "mt-4 ";
+        public string EndTournamentVisibility { get; set; } = "mt-4 mud-float-right ";
+        public string NewTournamentVisibility { get; set; } = "d-none";
+        public string FinalRankingVisible { get; set; } = "d-none";
+        public string PlayersVisibility { get; set; } = "";
+
+        public string First
+        {
+            get
+            {
+                if (CurrentPlayers.FirstOrDefault() != null)
+                    return CurrentPlayers.FirstOrDefault().Name;
+                else
+                    return "";
+            }
+        }
+        public string Second
+        {
+            get
+            {
+                if (CurrentPlayers.Count > 1)
+                    return CurrentPlayers.ElementAt(1).Name;
+                else
+                    return "";
+            }
+        }
+        public string Third
+        {
+            get
+            {
+                if (CurrentPlayers.Count > 2)
+                    return CurrentPlayers.ElementAt(2).Name;
+                else
+                    return "";
+            }
+        }
 
         /// <summary>
         /// Load Data From Source
@@ -31,6 +72,15 @@ namespace KeizerPairing.Shared
                 CurrentPairings = playerService.CurrentPairings;
                 CurrentRoundNumber = playerService.CurrentRoundNumber;
                 NextRoundDisabled = playerService.NextRoundDisabled;
+                EndTournamentDisabled = playerService.EndTournamentDisabled;
+                PairingsVisibility = playerService.PairingsVisibility;
+                RoundVisibility = playerService.RoundVisibility;
+                DeleteVisibility = playerService.DeleteVisibility;
+                EndTournamentVisibility = playerService.EndTournamentVisibility;
+                NewTournamentVisibility = playerService.NewTournamentVisibility;
+                FinalRankingVisible = playerService.FinalRankingVisible;
+                PlayersVisibility = playerService.PlayersVisibility;
+
             }
         }
 
@@ -44,6 +94,15 @@ namespace KeizerPairing.Shared
             CurrentPairings = new();
             CurrentRoundNumber = 1;
             NextRoundDisabled = true;
+            EndTournamentDisabled = true;
+            PairingsVisibility = "";
+            RoundVisibility = "";
+            DeleteVisibility = "mt-4 ";
+            EndTournamentVisibility = "mt-4 mud-float-right ";
+            NewTournamentVisibility = "d-none";
+            FinalRankingVisible = "d-none";
+            PlayersVisibility = "";
+
             OnChange?.Invoke();
         }
 
@@ -295,7 +354,7 @@ namespace KeizerPairing.Shared
                         {
                             //find the values of the current player in the previous round
                             var lastRoundplayer = Rounds[CurrentRoundNumber - 2].Players.Where(x => x.Number == player.Number).FirstOrDefault();
-                            
+
                             //if player is white
                             if (currentPairing.White.Number == player.Number)
                             {
@@ -371,6 +430,7 @@ namespace KeizerPairing.Shared
             }
             //if all the pairings are completed, enable the next round
             NextRoundDisabled = CurrentPairings.Any(x => x.Result == null || x.Result == string.Empty);
+            EndTournamentDisabled = NextRoundDisabled;
 
             OnChange?.Invoke();
 
@@ -391,8 +451,33 @@ namespace KeizerPairing.Shared
             round.Players = CurrentPlayers.Clone();
             SetPlayersPresenceToPresent();
             NextRoundDisabled = true;
-            OnChange?.Invoke();
+            EndTournamentDisabled = true;
             UpdatePairings();
+            OnChange?.Invoke();
+        }
+        /// <summary>
+        /// Add current round to Rounds, update player values for next round, set players presence to present and update pairings
+        /// </summary>
+        public void EndTournament()
+        {
+            Round round = new()
+            {
+                RoundNumber = CurrentRoundNumber++,
+                Pairings = CurrentPairings.Clone()
+            };
+            Rounds.Add(round);
+            UpdatePlayersForNextRound();
+            round.Players = CurrentPlayers.Clone();
+            SetPlayersPresenceToPresent();
+            PairingsVisibility = "d-none";
+            RoundVisibility = "d-none";
+            DeleteVisibility = "d-none";
+            EndTournamentVisibility = "d-none";
+            NewTournamentVisibility = "mt-4";
+            FinalRankingVisible = "";
+            PlayersVisibility = "d-none";
+
+            OnChange?.Invoke();
         }
 
         /// <summary>
@@ -484,7 +569,5 @@ namespace KeizerPairing.Shared
 
 
     }
-
-
 
 }

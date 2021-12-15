@@ -4,7 +4,7 @@
 @inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
 @implements IDisposable
 
-<MudItem md="6">
+<MudItem md="6" xs="12" Class="@PlayerService.PairingsVisibility">
     <MudItem xs="12" sm="12" md="12">
         <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Pairings</MudText>
     </MudItem>
@@ -39,7 +39,7 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowForward" aria-label="add" Label="Next Round" Class="mt-4 mud-float-right" Disabled="PlayerService.NextRoundDisabled" @onclick="NextRound" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowForward" aria-label="add" Class="mt-4 mud-float-right" Disabled="PlayerService.NextRoundDisabled" @onclick="NextRound" />
 </MudItem>
 @code {
 

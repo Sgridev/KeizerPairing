@@ -4,7 +4,7 @@
 @inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
 
 @implements IDisposable
-<MudItem md="12">
+<MudItem xs="12" md="12">
     <MudItem xs="12" sm="12" md="12" Class="pt-6">
         <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Ranking</MudText>
     </MudItem>
@@ -31,7 +31,11 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
-    <MudFab Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" aria-label="add" Class="mt-4" @onclick="ClearTournament" />
+    <MudFab Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" aria-label="add" Class="@PlayerService.DeleteVisibility" @onclick="ClearTournament" />
+    <MudFab Color="Color.Secondary" Icon="@Icons.Material.Filled.EmojiEvents" aria-label="add" Class="@PlayerService.EndTournamentVisibility" Disabled="PlayerService.EndTournamentDisabled" @onclick="EndTournament" />
+    <div class="d-flex justify-center">
+        <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.AddCircle" aria-label="add" Label="New Tournament" Class="@PlayerService.NewTournamentVisibility" @onclick="ClearTournament" />
+    </div>
 </MudItem>
 @code {
 
@@ -63,6 +67,21 @@
         if (!result.Cancelled)
         {
             PlayerService.Clear();
+            localStorage.SetItem("Tournament", PlayerService);
+        }
+    }
+
+    private async Task EndTournament()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Are you sure you want to end the tournament?");
+        parameters.Add("ButtonText", "GO");
+        parameters.Add("Color", Color.Primary);
+
+        var result = await DialogService.Show<DialogComponent>("End Tournament", parameters).Result;
+        if (!result.Cancelled)
+        {
+            PlayerService.EndTournament();
             localStorage.SetItem("Tournament", PlayerService);
         }
     }

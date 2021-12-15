@@ -3,7 +3,7 @@
 @inject PlayerService PlayerService
 @implements IDisposable
 
-<MudItem xs="12" sm="12" md="12">
+<MudItem xs="12" sm="12" md="12" Class="@PlayerService.RoundVisibility">
     <MudText Align="Align.Center" Typo="Typo.h6">Round @PlayerService.CurrentRoundNumber</MudText>
 </MudItem>
 

@@ -1,0 +1,53 @@
+﻿@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject PlayerService PlayerService
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+@implements IDisposable
+<MudItem xs="12" md="12" Class="@PlayerService.FinalRankingVisible" Style="padding: 0;">
+    <MudItem xs="12" sm="12" md="12" Class="pt-6">
+        <MudText Align="Align.Center" Typo="Typo.h5" Class="mudblazor-text-h5 mt-4 mb-4">Results</MudText>
+    </MudItem>
+    <div class="d-flex justify-center">
+        <MudIcon xs="12" md="12" Icon="@Icons.Material.Filled.EmojiEvents" Style="font-size: 12rem; color: gold ;" />
+    </div>
+    <MudItem xs="12" sm="12" md="12" Style="padding: 0;">
+        <MudText Align="Align.Center" Typo="Typo.h5">
+            @PlayerService.First
+        </MudText>
+    </MudItem>
+</MudItem>
+<MudItem xs="12" md="6" Class="@PlayerService.FinalRankingVisible" Style="padding: 0;">
+    <div class="d-flex justify-center">
+        <MudIcon xs="12" md="12" Icon="@Icons.Material.Filled.EmojiEvents" Style="font-size: 12rem; color: silver;" />
+    </div>
+    <MudItem xs="12" sm="12" md="12" Style="padding: 0;">
+        <MudText Align="Align.Center" Typo="Typo.h5">
+                       @PlayerService.Second
+        </MudText>
+    </MudItem>
+</MudItem>
+<MudItem xs="12" md="6" Class="@PlayerService.FinalRankingVisible" Style="padding: 0;">
+    <div class="d-flex justify-center">
+        <MudIcon xs="12" md="12" Icon="@Icons.Material.Filled.EmojiEvents" Style="font-size: 12rem; color: #CD7F32;" />
+    </div>
+    <MudItem xs="12" sm="12" md="12" Style="padding: 0;">
+        <MudText Align="Align.Center" Typo="Typo.h5">
+                       @PlayerService.Third
+        </MudText>
+    </MudItem>
+</MudItem>
+@code {
+
+
+    protected override void OnInitialized()
+    {
+        PlayerService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PlayerService.OnChange -= StateHasChanged;
+    }
+
+}
