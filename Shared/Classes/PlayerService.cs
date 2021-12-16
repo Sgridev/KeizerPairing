@@ -33,7 +33,7 @@ namespace KeizerPairing.Shared
             get
             {
                 if (CurrentPlayers.FirstOrDefault() != null)
-                    return CurrentPlayers.FirstOrDefault().Name;
+                    return CurrentPlayers.OrderByDescending(x=>x.Score).FirstOrDefault().Name;
                 else
                     return "";
             }
@@ -43,7 +43,7 @@ namespace KeizerPairing.Shared
             get
             {
                 if (CurrentPlayers.Count > 1)
-                    return CurrentPlayers.ElementAt(1).Name;
+                    return CurrentPlayers.OrderByDescending(x => x.Score).ElementAt(1).Name;
                 else
                     return "";
             }
@@ -53,7 +53,7 @@ namespace KeizerPairing.Shared
             get
             {
                 if (CurrentPlayers.Count > 2)
-                    return CurrentPlayers.ElementAt(2).Name;
+                    return CurrentPlayers.OrderByDescending(x => x.Score).ElementAt(2).Name;
                 else
                     return "";
             }
